@@ -1,0 +1,32 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Ligas</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>Lista de Ligas</h1>
+
+    {% if data %}
+      <ul class="ligas-container">
+        {% for liga in data['leagues'] %}
+
+        <a href="{{ url_for('mostrar_liga', name=liga['strLeague']) }}" class="liga-container{% if liga['strLeague'] == 'Spanish La Liga' %} highlight{% endif %}">
+
+          <!--<div class="liga-container {% if liga['strLeague'] == 'Spanish La Liga' %}highlight{% endif %}">-->
+            <li>{{ liga['strLeague'] }}</li>
+            <li>{{ liga['strSport'] }}</li>
+            <li>ID: {{ liga['idLeague'] }}</li>
+          </a>
+          <!--</div>-->
+        {% endfor %}
+      </ul>
+    {% else %}
+        <p class="error-message">Error al realizar la solicitud.</p>
+    {% endif %}
+
+</body>
+</html>

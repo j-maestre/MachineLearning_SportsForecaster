@@ -1,0 +1,53 @@
+/* static/estilos.css */
+
+/* ... (estilos anteriores) */
+
+/* Contenedor flex para organizar los equipos */
+.equipos-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Contenedor para cada equipo (estilo de tarjeta) */
+.equipo-container {
+  text-decoration: none;
+  color: black;
+  flex: 1 0 300px;
+  background-color: #f0f0f0;
+  margin: 0 10px 10px 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para simular una tarjeta */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Agregamos transición a transform para el efecto de elevación en hover */
+  cursor: pointer;
+  overflow: hidden; /* Oculta contenido que excede el contenedor */
+}
+
+/* Estilo para el equipo destacado */
+.equipo-container.highlight {
+  background-color: #ffffff;
+}
+
+/* Estilo para cada elemento dentro del contenedor */
+.equipo-container li {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Estilo al hacer hover en un equipo deshabilitado */
+.equipo-container:not(.highlight):hover {
+  background-color: #c0c0c0; /* Nuevo color en hover para equipos habilitados */
+  transform: translateY(-2px); /* Eleva ligeramente en hover */
+}
+
+/* Estilo al hacer hover en un equipo habilitado */
+.equipo-container.highlight:hover {
+  background-color: #9cffb6; /* Nuevo color en hover para equipos habilitados */
+  transform: translateY(-2px); /* Eleva ligeramente en hover */
+}
+
+/* Cambia el cursor a pointer al hacer hover */
+.equipo-container:hover {
+  cursor: pointer;
+}
+
+/* ... (otros estilos) */

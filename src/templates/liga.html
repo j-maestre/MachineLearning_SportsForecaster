@@ -1,0 +1,32 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Ligas</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='liga.css') }}">
+</head>
+<body>
+
+    <h1>Lista de equipos</h1>
+
+    
+    <div class="equipos-container">
+      {% if detalles_liga %}
+        {% for team in detalles_liga.teams %}
+          <a href="#" class="equipo-container">
+            <ul>
+              <li>Team ID: {{ team.idTeam }}</li>
+              <li>Team Name: {{ team.strTeam }}</li>
+            </ul>
+          </a>
+        {% endfor %}
+      {% else %}
+        <p class="error-message">Error al realizar la solicitud.</p>
+      {% endif %}
+    </div>
+
+</body>
+</html>
+
+

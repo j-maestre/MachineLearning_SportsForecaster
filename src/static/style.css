@@ -1,0 +1,77 @@
+/* static/estilos.css */
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f5f5f5;
+  margin: 10px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+/* Contenedor flex para organizar las ligas */
+.ligas-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Contenedor para cada liga (estilo de tarjeta) */
+.liga-container {
+  text-decoration: none;
+  color: black;
+  flex: 1 0 300px;
+  background-color: #f0f0f0;
+  margin: 0 10px 10px 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para simular una tarjeta */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Agregamos transición a transform para el efecto de elevación en hover */
+  cursor: pointer;
+  overflow: hidden; /* Oculta contenido que excede el contenedor */
+}
+
+/* Estilo para la liga destacada */
+.liga-container.highlight {
+  background-color: #ffffff;
+}
+
+/* Estilo para cada elemento dentro del contenedor */
+.liga-container li {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+/*not highlight */
+
+/* Estilo al hacer hover en una liga deshabilitada */
+.liga-container:not(.highlight):hover {
+  background-color: #c0c0c0; /* Nuevo color en hover para ligas habilitadas */
+  transform: translateY(-2px); /* Eleva ligeramente en hover */
+}
+
+/* Estilo al hacer hover en una liga habilitada */
+.liga-container.highlight:hover {
+  background-color: #9cffb6; /* Nuevo color en hover para ligas habilitadas */
+  transform: translateY(-2px); /* Eleva ligeramente en hover */
+}
+
+/* Cambia el cursor a pointer al hacer hover */
+.liga-container:hover {
+  cursor: pointer;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+p {
+  color: #666;
+}
+
+.error-message {
+  color: #ff0000;
+  font-weight: bold;
+  margin-top: 10px;
+}
