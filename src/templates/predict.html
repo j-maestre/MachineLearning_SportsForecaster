@@ -1,0 +1,50 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Predict</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='predict.css') }}">
+    <script src="{{ url_for('static', filename='predict.js') }}"></script>
+</head>
+<body>
+
+  <h1>Predict Match</h1>
+
+    <div class="select-container">
+        <label>Select League</label>
+        <select name="league" id="league_select"></select>
+        <!-- Agrega aquí tu lista desplegable para seleccionar la liga -->
+        <!-- Ejemplo: <select name="league" id="league"> ... </select> -->
+    </div>
+
+    <div class="select-container">
+        <label>Select Home Team</label>
+        <select name="team_home" id="team_home_select"></select>
+        <!-- Agrega aquí tu lista desplegable para seleccionar el equipo local -->
+        <!-- Ejemplo: <select name="home_team" id="home_team"> ... </select> -->
+    </div>
+
+    <div class="select-container">
+        <label>Select Visitor Team</label>
+        <select name="team_visitor" id="team_visitor_select"></select>
+        <!-- Agrega aquí tu lista desplegable para seleccionar el equipo visitante -->
+        <!-- Ejemplo: <select name="visitor_team" id="visitor_team"> ... </select> -->
+    </div>
+
+    <div class="input-container">
+      <label>Date</label>
+      <input type="date" id="date" class="input_date">
+    </div>
+
+    <div class="input-container">
+      <label>Time</label>
+      <input type="time" class="input_time">
+      <!-- Agrega aquí tu control de entrada para la hora si es necesario -->
+      <!-- Ejemplo: <input type="time" id="time" class="input_time"> -->
+    </div>
+
+    <p class="btn">Predict Match</p>
+
+</body>
+</html>

@@ -10,6 +10,8 @@
 
     <h1>Lista de Ligas</h1>
 
+    <a href="{{ url_for('predict_view')}}"><p class="btn">Predict Match</p></a>
+
     {% if data %}
       <ul class="ligas-container">
         {% for liga in data['leagues'] %}

@@ -1,0 +1,80 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Ligas</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='team.css') }}">
+</head>
+<body>
+
+  <div class="team-details">
+    <h1>{{ team.strTeam }}</h1>
+
+    {% if team %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Equipo Local</th>
+                    <th>Equipo Visitante</th>
+                    <th>Resultado</th>
+                    <th>Estadio</th>
+                    <th>Fecha y Hora</th>
+                    <th>Video</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for match in team.results %}
+                    <tr>
+                        <td>{{ match.strHomeTeam }}</td>
+                        <td>{{ match.strAwayTeam }}</td>
+                        <td>{{ match.intHomeScore }} - {{ match.intAwayScore }}</td>
+                        <td>{{ match.strVenue }}</td>
+                        <td>{{ match.strTimestamp }}</td>
+                        <td><a href="{{ match.strVideo }}" target="_blank">Ver Video</a></td>
+                        <td>{{ match.strStatus }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No se encontraron datos del equipo.</p>
+    {% endif %}
+
+    <!-- Próximos Partidos -->
+    {% if team_next %}
+      <h2>Próximos Partidos</h2>
+      <table>
+          <thead>
+              <tr>
+                  <th>Equipo Local</th>
+                  <th>Equipo Visitante</th>
+                  <th>Estadio</th>
+                  <th>Fecha y Hora</th>
+                  <th>Video</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for match in team_next.events %}
+                  <tr>
+                      <td>{{ match.strHomeTeam }}</td>
+                      <td>{{ match.strAwayTeam }}</td>
+                      <td>{{ match.strVenue }}</td>
+                      <td>{{ match.strTimestamp }}</td>
+                      <td><a href="{{ match.strVideo }}" target="_blank">Ver Video</a></td>
+                  </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+
+    {% else %}
+      <p>No se encontraron datos del equipo.</p>
+    {% endif %}
+
+</div>
+
+</body>
+</html>
+
+

@@ -14,7 +14,7 @@
     <div class="equipos-container">
       {% if detalles_liga %}
         {% for team in detalles_liga.teams %}
-          <a href="#" class="equipo-container">
+        <a href="{{ url_for('mostrar_resultados_team', name=team['strTeam'], id_team=team['idTeam']) }}" class="equipo-container">
             <ul>
               <li>Team ID: {{ team.idTeam }}</li>
               <li>Team Name: {{ team.strTeam }}</li>
