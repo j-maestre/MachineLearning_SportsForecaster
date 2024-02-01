@@ -31,6 +31,8 @@ function onLoad(){
   leagueSelect.addEventListener('change', function() {
     getTeams(leagueSelect.value)
   });
+
+  document.getElementById("predict").addEventListener("click", onPredict)
 }
 
 
@@ -69,4 +71,14 @@ fetch(`/api/teams_by_league?name=${name}`)
   // Manejar errores
   console.error('Error en la petición:', error);
 });
+}
+
+
+function onPredict(){
+  let home_team = document.getElementById("team_home_select").value
+  let visitor_team = document.getElementById("team_visitor_select").value
+  let date = document.getElementById("date").value;
+  let time = document.getElementById("time").value;
+
+  console.log("Predict " + home_team + " vs " + visitor_team + " on " + date + " at " + time);
 }
