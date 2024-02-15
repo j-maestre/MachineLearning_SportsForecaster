@@ -1,5 +1,14 @@
 document.addEventListener('DOMContentLoaded', onLoad);
 
+
+let match_info = {
+  home_team : String,
+  visitor_team : String,
+  home_goals : Number,
+  visitor_goals : Number,
+};
+
+
 function onLoad(){
   console.log("DOM loaded");
 
@@ -116,8 +125,9 @@ function onPredict(){
   });
 
 
-
+  let match_info_list = [];
   console.log(home_name + " vs " + visitor_name)
+
   fetch(`/api/get/team_vs_team?id_team_first=${home_name}&id_team_second=${visitor_name}`)
   .then(response => {
     if (!response.ok) {
@@ -127,23 +137,58 @@ function onPredict(){
   })
   .then(data => {
 
+
     console.log("----- Last events "+home_name+" vs "+visitor_name+" -----")
     // Rellena los select con los nombres de los equipos
     data.event.forEach(event => {
-      console.log(event.strHomeTeam + " " + event.intHomeScore + " - " + event.intAwayScore + " " + event.strAwayTeam);
+      let match = {
+        home_team : home_name,
+        visitor_team : visitor_name,
+        home_goals : event.intHomeScore,
+        visitor_goals : event.intAwayScore,
+      };
+
+      if(event.intHomeScore != null && event.intAwayScore != null){
+        match_info_list.push(match);
+      }
+
+      //console.log(event.strHomeTeam + " " + event.intHomeScore + " - " + event.intAwayScore + " " + event.strAwayTeam);
       
     });
-    console.log(data)
+    console.log(match_info_list)
     console.log("----- -----")
+    train_neural(match_info_list)
   })
   .catch(error => {
     // Manejar errores
     console.error('Error en la petición:', error);
   });
 
-
-
-
   // Coger todos los datos posibles de home_team vs visitor_team
   // En el free solo se puede los ultimos partidos locales, asi que de momento hay que coger los ultimos partidos de home_team
+
+}
+
+
+function train_neural(data){
+  console.log("Training neural")
+
+  data_raw = encodeURIComponent(JSON.stringify(data))
+
+  fetch(`/api/train?data=${data_raw}`)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Error en la solicitud a la API');
+    }
+    return response.json();
+  })
+  .then(data => {
+    
+  })
+  .catch(error => {
+    // Manejar errores
+    console.error('Error en la petición:', error);
+  });
+    
+  
 }
