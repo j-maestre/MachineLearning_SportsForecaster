@@ -8,8 +8,9 @@ from flask import Flask, render_template, jsonify, request
 import json
 import requests  # Agrega esta línea para importar la biblioteca requests
 from urllib.parse import unquote
+import numpy as np
 
-
+import random
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
@@ -19,6 +20,19 @@ from tensorflow.keras.utils import to_categorical
 app = Flask(__name__)
 app.config['STATIC_FOLDER'] = 'static'
 
+
+random_seed = 42
+random.seed(random_seed)
+np.random.seed(random_seed)
+tf.random.set_seed(random_seed)
+
+
+
+team_mapping = {
+  'Real Madrid': 0,
+  'Barcelona': 1,
+  'Manchester United': 2
+}
 
 
 @app.route('/')
@@ -99,6 +113,13 @@ def get_all_teams_by_leagues():
   else:
     return jsonify({'error': 'Error en la solicitud a la API'}), 500
 
+
+#@app.route('/api/get_last_five')
+#def get_last_five(){
+  #name = request.args.get()
+#}
+
+
 @app.route('/api/get/team_vs_team')
 def get_team_vs_team():
   id_team_first = request.args.get('id_team_first')
@@ -112,13 +133,16 @@ def get_team_vs_team():
 
   return jsonify(data)
 
+trained_model = None
 
 @app.route('/api/train')
 def send_data_to_neural():
+  global trained_model
   data_json = unquote(request.args.get('data'))
   data = json.loads(data_json)
   print("****************** DATA ***************************")
-  print(data[0])
+  print(data[0]['home_team'])
+  print(data[0]['visitor_team'])
   print("**************************************************")
 
   # Separar características (X) y etiquetas (y)
@@ -126,11 +150,14 @@ def send_data_to_neural():
     [entry['home_goals'], entry['visitor_goals']]
     for entry in data
   ]
-  y = [1 if entry['home_goals'] > entry['visitor_goals'] else 0 for entry in data]
+  y = [
+    [float(entry['home_goals']), float(entry['visitor_goals'])]
+    for entry in data
+  ]
 
   # Convertir a numpy array
-  X = tf.constant([[float(entry[0]), float(entry[1])] for entry in X], dtype=tf.float32)
-  y = tf.constant(y, dtype=tf.float32)
+  X = np.array(X)
+  y = np.array(y)
 
   # Normalizar características
   X_normalized = normalize_data(X)
@@ -140,16 +167,23 @@ def send_data_to_neural():
   X_train, X_test = X_normalized[:split_index], X_normalized[split_index:]
   y_train, y_test = y[:split_index], y[split_index:]
 
-  # Entrenar la red neuronal
+  # Entrenar la red neuronal para predecir goles de casa y visitante
+  print("**** Empezando a entrenar ****")
   trained_model = train_neural_network(X_train, y_train)
 
   # Evaluar el modelo en datos de prueba
-  accuracy = trained_model.evaluate(X_test, y_test)[1]
-  print(f'Accuracy on test data: {accuracy}')
+  mse = trained_model.evaluate(X_test, y_test)
+  print(f'Mean Squared Error on test data: {mse}')
+  #print(f'Accuracy on test data: {accuracy}')
 
-  print(f'Accuracy on test data: {accuracy}')
+  return predict_goals(data[0]['home_team'],data[0]['visitor_team'])
+  
+  #return jsonify({'done': 'Trained finished'}), 200
 
 def normalize_data(data):
+  # Convertir los datos a tipo float32
+  data = tf.constant(data, dtype=tf.float32)
+
   mean = tf.reduce_mean(data, axis=0)
   std = tf.math.reduce_std(data, axis=0)
   normalized_data = (data - mean) / std
@@ -159,16 +193,60 @@ def train_neural_network(X_train, y_train):
   model = Sequential([
     Dense(64, activation='relu', input_shape=(X_train.shape[1],)),
     Dense(32, activation='relu'),
-    Dense(1, activation='sigmoid')
+    Dense(2, activation='linear')
   ])
 
   #optimizer = Adam(learning_rate=0.001)
   #model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
 
-  model.compile(optimizer='adam', loss='sparse-categorical_crossentropy',metrics=['accuracy'])
-  model.fit(X_train, y_train, epochs=50, batch_size=32, validation_split=0.2)
+  model.compile(optimizer='adam', loss='mean_squared_error',metrics=['accuracy'])
+  model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.2)
 
   return model
+
+# Añadir una nueva ruta para hacer predicciones
+@app.route('/api/predict', methods=['GET'])
+def predict_goals(home_team, visitor_team):
+  global trained_model  # Acceder a trained_model global
+
+  # Obtener el valor numérico para cada equipo del diccionario
+  home_team_encoded = team_mapping.get(home_team, -1)  # -1 si no se encuentra el equipo
+  visitor_team_encoded = team_mapping.get(visitor_team, -1)
+
+  if home_team_encoded == -1 or visitor_team_encoded == -1:
+    return jsonify({'error': 'Invalid team name'}), 400
+
+  # Normalizar características del nuevo partido usando tu función de normalización
+  new_match_data = np.array([[float(home_team_encoded), float(visitor_team_encoded)]], dtype=np.float32)
+  new_match_normalized = normalize_data(new_match_data)
+
+
+  predicted_home_goals_list = []
+  predicted_visitor_goals_list = []
+
+  for _ in range(100):
+    # Realizar la predicción con el modelo entrenado
+    goals_prediction = trained_model.predict(new_match_normalized)
+
+    # Convertir las predicciones a tipos de datos nativos de Python y agregar a las listas
+    predicted_home_goals_list.append(float(goals_prediction[0][0]))
+    predicted_visitor_goals_list.append(float(goals_prediction[0][1]))
+
+  # Calcular la media de las predicciones
+  average_home_goals = sum(predicted_home_goals_list) / len(predicted_home_goals_list)
+  average_visitor_goals = sum(predicted_visitor_goals_list) / len(predicted_visitor_goals_list)
+
+  print(f"Media de goles para el equipo local: {average_home_goals}")
+  print(f"Media de goles para el equipo visitante: {average_visitor_goals}")
+
+
+
+  return jsonify({
+    'home_team': home_team,
+    'visitor_team': visitor_team,
+    'predicted_home_goals': average_home_goals * 100,
+    'predicted_visitor_goals': average_visitor_goals * 100
+  }), 200
 
 
 if __name__ == '__main__':
