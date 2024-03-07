@@ -20,7 +20,7 @@ def CheckPythonPackages(name):
     return CheckPythonPackages(name)
   return True
 
-packages_needed = ['requests', 'Flask']
+packages_needed = ['requests', 'Flask', 'tensorflow']
 
 
 for name in packages_needed:
