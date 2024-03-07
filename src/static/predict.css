@@ -77,5 +77,29 @@ select {
   font-size: 14px;
 }
 
+.loading{
+  display: none;
+}
+
+.result {
+  font-weight: bold; /* Negrita */
+  font-size: 18px; /* Tamaño de fuente */
+  color: #333; /* Color de texto oscuro */
+}
+
+/* Estilo para el párrafo con la clase "precision" */
+.precision {
+  font-style: italic; /* Cursiva */
+  font-size: 14px; /* Tamaño de fuente más pequeño */
+  color: #666; /* Color de texto más claro */
+}
+
+/* Estilo específico para el margen de precisión */
+#predict_precision {
+  color: green; /* Color de texto verde */
+  font-weight: bold; /* Negrita */
+  font-size: 16px; /* Tamaño de fuente */
+}
+
 /* Puedes ajustar los estilos según tus preferencias */
 
