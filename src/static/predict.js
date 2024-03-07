@@ -141,12 +141,17 @@ function onPredict(){
     console.log("----- Last events "+home_name+" vs "+visitor_name+" -----")
     // Rellena los select con los nombres de los equipos
     data.event.forEach(event => {
+
+      let time = event.strTime?event.strTime.split(('+')[0]):["-1:-1:-1"];
+
+      //console.log(time[0]);
       console.log(event)
       let match = {
         home_team : home_name,
         visitor_team : visitor_name,
         home_goals : event.intHomeScore,
         visitor_goals : event.intAwayScore,
+        time : time[0]
       };
 
       if(event.intHomeScore != null && event.intAwayScore != null){
@@ -156,13 +161,25 @@ function onPredict(){
       //console.log(event.strHomeTeam + " " + event.intHomeScore + " - " + event.intAwayScore + " " + event.strAwayTeam);
       
     });
+    console.log("----- -----")
     console.log(match_info_list)
     console.log("----- -----")
+
+    let match_to_predict = {
+      home_team : home_name, 
+      visitor_team : visitor_name,
+      time :  document.getElementById("time").value + ":00"
+    }
+
+    let dat_to_train = {
+      0 : match_info_list,
+      1 : match_to_predict
+    }
 
     
 
 
-    train_neural(match_info_list)
+    train_neural(dat_to_train)
     // mostrar_resultados_team me devuelve los ultimos 5 partidos de un equipo en casa
     
   }).catch(error => {
@@ -233,7 +250,8 @@ function train_neural(data){
   console.log("Training neural")
 
   data_raw = encodeURIComponent(JSON.stringify(data))
-
+  let loading = document.getElementById("loading_text");
+  loading.style.display = "block";
   fetch(`/api/train?data=${data_raw}`).then(response => {
     if (!response.ok) {
       throw new Error('Error en la solicitud a la API');
@@ -245,6 +263,12 @@ function train_neural(data){
     console.log(data.home_team + " " + data.predicted_home_goals + " - " + data.predicted_visitor_goals + " " + data.visitor_team);
 
     document.getElementById("predict_result").innerHTML = `${data.home_team} ${data.predicted_home_goals.toFixed(2)} - ${data.predicted_visitor_goals.toFixed(2)} ${data.visitor_team}`;
+
+
+    let error_value1 = parseFloat(data.error_value[0]);
+    let error_value2 = parseFloat(data.error_value[1]);;
+    document.getElementById("predict_precision").innerHTML = "Home:" + error_value1.toFixed(3) + " Visitor: " + error_value2.toFixed(3);
+    loading.style.display = "none";
 
   }).catch(error => {
     // Manejar errores

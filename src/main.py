@@ -133,6 +133,10 @@ def get_team_vs_team():
 
   return jsonify(data)
 
+def extract_hour(time_str):
+  hour, minute, second = map(int, time_str.split(':'))
+  return hour + (minute / 60) + (second / 3600)
+
 trained_model = None
 
 @app.route('/api/train')
@@ -141,18 +145,28 @@ def send_data_to_neural():
   data_json = unquote(request.args.get('data'))
   data = json.loads(data_json)
   print("****************** DATA ***************************")
-  print(data[0]['home_team'])
-  print(data[0]['visitor_team'])
+  train_data = data["0"]
+  predict_data = data["1"]
+  print(train_data[0]['home_team'])
+  print(train_data[0]['visitor_team'])
+  print(train_data[0]['time'])
+  print("****************** DATA TO PREDICT ***************************")
+  print(predict_data['home_team'])
+  print(predict_data['visitor_team'])
+  print(predict_data['time'])
   print("**************************************************")
 
   # Separar características (X) y etiquetas (y)
+  # Datos para entrenar
   X = [
-    [entry['home_goals'], entry['visitor_goals']]
-    for entry in data
+    [entry['home_goals'], entry['visitor_goals'], extract_hour(entry['time'])]
+    for entry in train_data
   ]
+
+  # Resultado esperado
   y = [
     [float(entry['home_goals']), float(entry['visitor_goals'])]
-    for entry in data
+    for entry in train_data
   ]
 
   # Convertir a numpy array
@@ -176,7 +190,7 @@ def send_data_to_neural():
   print(f'Mean Squared Error on test data: {mse}')
   #print(f'Accuracy on test data: {accuracy}')
 
-  return predict_goals(data[0]['home_team'],data[0]['visitor_team'])
+  return predict_goals(predict_data['home_team'],predict_data['visitor_team'], predict_data['time'], mse)
   
   #return jsonify({'done': 'Trained finished'}), 200
 
@@ -191,22 +205,26 @@ def normalize_data(data):
 
 def train_neural_network(X_train, y_train):
   model = Sequential([
-    Dense(64, activation='relu', input_shape=(X_train.shape[1],)),
-    Dense(32, activation='relu'),
+    Dense(16, activation='relu', input_shape=(X_train.shape[1],)),
+    Dense(8, activation='relu'),
     Dense(2, activation='linear')
   ])
 
   #optimizer = Adam(learning_rate=0.001)
   #model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
 
+  random.seed(random_seed)
+  np.random.seed(random_seed)
+  tf.random.set_seed(random_seed)
+
   model.compile(optimizer='adam', loss='mean_squared_error',metrics=['accuracy'])
-  model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.2)
+  model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.2, shuffle=True)
 
   return model
 
 # Añadir una nueva ruta para hacer predicciones
 @app.route('/api/predict', methods=['GET'])
-def predict_goals(home_team, visitor_team):
+def predict_goals(home_team, visitor_team, time, error_value):
   global trained_model  # Acceder a trained_model global
 
   # Obtener el valor numérico para cada equipo del diccionario
@@ -217,20 +235,20 @@ def predict_goals(home_team, visitor_team):
     return jsonify({'error': 'Invalid team name'}), 400
 
   # Normalizar características del nuevo partido usando tu función de normalización
-  new_match_data = np.array([[float(home_team_encoded), float(visitor_team_encoded)]], dtype=np.float32)
+  new_match_data = np.array([[float(home_team_encoded), float(visitor_team_encoded), extract_hour(time)]], dtype=np.float32)
   new_match_normalized = normalize_data(new_match_data)
 
 
   predicted_home_goals_list = []
   predicted_visitor_goals_list = []
 
-  for _ in range(100):
-    # Realizar la predicción con el modelo entrenado
-    goals_prediction = trained_model.predict(new_match_normalized)
+  #for _ in range(100):
+  # Realizar la predicción con el modelo entrenado
+  goals_prediction = trained_model.predict(new_match_normalized)
 
-    # Convertir las predicciones a tipos de datos nativos de Python y agregar a las listas
-    predicted_home_goals_list.append(float(goals_prediction[0][0]))
-    predicted_visitor_goals_list.append(float(goals_prediction[0][1]))
+  # Convertir las predicciones a tipos de datos nativos de Python y agregar a las listas
+  predicted_home_goals_list.append(float(goals_prediction[0][0]))
+  predicted_visitor_goals_list.append(float(goals_prediction[0][1]))
 
   # Calcular la media de las predicciones
   average_home_goals = sum(predicted_home_goals_list) / len(predicted_home_goals_list)
@@ -245,7 +263,8 @@ def predict_goals(home_team, visitor_team):
     'home_team': home_team,
     'visitor_team': visitor_team,
     'predicted_home_goals': average_home_goals * 100,
-    'predicted_visitor_goals': average_visitor_goals * 100
+    'predicted_visitor_goals': average_visitor_goals * 100,
+    'error_value' : error_value
   }), 200
 
 
