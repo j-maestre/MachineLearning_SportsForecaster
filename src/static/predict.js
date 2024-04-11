@@ -6,10 +6,8 @@ let match_info = {
   visitor_team : String,
   home_goals : Number,
   visitor_goals : Number,
-  home_posesion: Number,
-  visitor_posesion: Number,
+  time: Number,
 };
-
 
 function onLoad(){
   console.log("DOM loaded");
@@ -141,17 +139,45 @@ function onPredict(){
     console.log("----- Last events "+home_name+" vs "+visitor_name+" -----")
     // Rellena los select con los nombres de los equipos
     data.event.forEach(event => {
+      
+      // Hora a piñon
+      //let time = event.strTime?event.strTime.split(('+')[0]):["05:00:00"];
+      
+      let time_raw = event.strTime?event.strTime.split(('+')[0]):["-1:00:00"];
+      let hour = ""; 
+      console.log(typeof(time_raw[0]))
+      console.log(time_raw[0])
+      if(typeof(time_raw[0]) === 'string'){
+        hour = time_raw[0].substring(0, 2);
+      }else{
+        hour = -1;
+      }
 
-      let time = event.strTime?event.strTime.split(('+')[0]):["-1:-1:-1"];
+      console.log(hour + " RAW")
+     
+      let time = -1;
+      if(hour == -1){
+        time = 4; // No time provided
+      }else if(hour > 8 && hour < 12){
+        time = 0; // Morning
+      }else if(hour >= 12 && hour <= 15){
+        time = 1; // Mid day
+      }else if(hour > 15 && hour < 21){
+        time = 2; // Afternoon
+      }else{
+        time = 3; // Night
+      }
 
-      //console.log(time[0]);
+
+      console.log("********* TIME *********")
+      console.log(time);
       console.log(event)
       let match = {
         home_team : home_name,
         visitor_team : visitor_name,
         home_goals : event.intHomeScore,
         visitor_goals : event.intAwayScore,
-        time : time[0]
+        time : time
       };
 
       if(event.intHomeScore != null && event.intAwayScore != null){
@@ -267,7 +293,7 @@ function train_neural(data){
 
     let error_value1 = parseFloat(data.error_value[0]);
     let error_value2 = parseFloat(data.error_value[1]);;
-    document.getElementById("predict_precision").innerHTML = "Home:" + error_value1.toFixed(3) + " Visitor: " + error_value2.toFixed(3);
+    document.getElementById("predict_precision").innerHTML = "Home: " + error_value1.toFixed(3) + " Visitor: " + error_value2.toFixed(3);
     loading.style.display = "none";
 
   }).catch(error => {

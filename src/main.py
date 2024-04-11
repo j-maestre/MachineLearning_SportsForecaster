@@ -159,9 +159,11 @@ def send_data_to_neural():
   # Separar características (X) y etiquetas (y)
   # Datos para entrenar
   X = [
-    [entry['home_goals'], entry['visitor_goals'], extract_hour(entry['time'])]
+    # [entry['home_goals'], entry['visitor_goals'], extract_hour(entry['time'])] # with raw time
+    [entry['home_goals'], entry['visitor_goals'], entry['time']]
     for entry in train_data
   ]
+  print(X)
 
   # Resultado esperado
   y = [
@@ -205,7 +207,7 @@ def normalize_data(data):
 
 def train_neural_network(X_train, y_train):
   model = Sequential([
-    Dense(16, activation='relu', input_shape=(X_train.shape[1],)),
+    Dense(64, activation='relu', input_shape=(X_train.shape[1],)),
     Dense(8, activation='relu'),
     Dense(2, activation='linear')
   ])
@@ -218,7 +220,7 @@ def train_neural_network(X_train, y_train):
   tf.random.set_seed(random_seed)
 
   model.compile(optimizer='adam', loss='mean_squared_error',metrics=['accuracy'])
-  model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.2, shuffle=True)
+  model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.2, shuffle=False)
 
   return model
 
@@ -234,7 +236,7 @@ def predict_goals(home_team, visitor_team, time, error_value):
   if home_team_encoded == -1 or visitor_team_encoded == -1:
     return jsonify({'error': 'Invalid team name'}), 400
 
-  # Normalizar características del nuevo partido usando tu función de normalización
+  # Normalizar características del nuevo partido
   new_match_data = np.array([[float(home_team_encoded), float(visitor_team_encoded), extract_hour(time)]], dtype=np.float32)
   new_match_normalized = normalize_data(new_match_data)
 
