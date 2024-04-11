@@ -16,6 +16,8 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.utils import to_categorical
 
+from utils.scraping import get_data_from_web as get_data_web
+
 
 app = Flask(__name__)
 app.config['STATIC_FOLDER'] = 'static'
@@ -269,6 +271,16 @@ def predict_goals(home_team, visitor_team, time, error_value):
     'error_value' : error_value
   }), 200
 
+
+
+@app.route('/api/web_scraping')
+def get_data_web_scraping():
+  #url = unquote(request.args.get('url'))
+  #data = json.loads(data_json)
+  print("Antes de enviar la url")
+  #print(url)
+  return get_data_web("")
+  
 
 if __name__ == '__main__':
   app.run(debug=True, port=8000)

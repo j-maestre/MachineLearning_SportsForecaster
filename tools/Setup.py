@@ -17,10 +17,10 @@ def CheckPythonPackages(name):
 
     print(f"Installing {name} module...")
     subprocess.call(['python', '-m', 'pip', 'install', name])
-    return CheckPythonPackages(name)
+    #return CheckPythonPackages(name)
   return True
 
-packages_needed = ['requests', 'Flask', 'tensorflow']
+packages_needed = ['requests', 'beautifulsoup4', 'Flask', 'tensorflow']
 
 
 for name in packages_needed:
