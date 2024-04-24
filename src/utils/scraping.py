@@ -23,6 +23,7 @@ def get_data_from_web(url):
         partidos = soup.find_all('tr', class_='matchRow')
 
         print(partidos)
+        partidos_totales = []
 
         # Iterar sobre cada fila de partido
         for partido in partidos:
@@ -47,6 +48,21 @@ def get_data_from_web(url):
             
             # Extraer el resultado del partido
             resultado = partido.find('td', class_='matchResult').text.strip()
+            goles_equipo_local, goles_equipo_visitante = resultado.split(':')
+            goles_equipo_local = int(goles_equipo_local)
+            goles_equipo_visitante = int(goles_equipo_visitante)    
+
+            # hay que entrar al link y coger la fecha
+            partido_formated = {
+                "fecha": fecha,
+                "home_name": equipo_local_nombre,
+                "posicion_local": equipo_local_posicion,
+                "visitor_name": equipo_visitante_nombre,
+                "posicion_visitante": equipo_visitante_posicion,
+                "home_goals": goles_equipo_local,
+                "visitor_goals": goles_equipo_visitante
+            }
+            partidos_totales.append(partido_formated)
 
             # Imprimir los detalles del partido
             print(f"Fecha: {fecha}, Equipo Local: {equipo_local_nombre}, Posición Local: {equipo_local_posicion}, Equipo Visitante: {equipo_visitante_nombre}, Posición Visitante: {equipo_visitante_posicion}, Resultado: {resultado}")
@@ -54,7 +70,7 @@ def get_data_from_web(url):
         print("La solicitud no fue exitosa. Código de estado:", response.status_code)
 
     return jsonify({
-        'result': 'bagabunga'
+        'result': partidos_totales
     }), 200
 
 

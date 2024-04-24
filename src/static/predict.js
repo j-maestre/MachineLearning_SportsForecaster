@@ -210,12 +210,30 @@ function onPredict(){
       return response.json();
     }).then(data => {
       console.log(data)
+
+      // Aqui tengo la data del web scraping, tengo que añadirlo a lo que ya tengo
+      /*data.map(value =>{
+
+        let match = {
+          home_team : value.home_name,
+          visitor_team : value.visitor_name,
+          home_goals : value.home_goals,
+          visitor_goals : value.visitor_goals,
+          //time : time
+        };
+        
+        if(event.intHomeScore != null && event.intAwayScore != null){
+          match_info_list.push(match);
+        }
+        
+      })*/
+
     }).catch(error => {
       // Manejar errores
       console.error('Error en la petición:', error);
     });
 
-    //train_neural(dat_to_train)
+    train_neural(dat_to_train)
     // mostrar_resultados_team me devuelve los ultimos 5 partidos de un equipo en casa
     
   }).catch(error => {
