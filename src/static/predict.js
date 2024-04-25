@@ -203,13 +203,13 @@ function onPredict(){
     }
 
     // ?url=https://es.besoccer.com/equipo/partidos/real-madrid
-    fetch("/api/web_scraping").then(response => {
+    /*fetch("/api/web_scraping").then(response => {
       if (!response.ok) {
         throw new Error('Error en la solicitud a la API');
       }
       return response.json();
     }).then(data => {
-      console.log(data)
+      console.log(data)*/
 
       // Aqui tengo la data del web scraping, tengo que añadirlo a lo que ya tengo
       /*data.map(value =>{
@@ -228,10 +228,10 @@ function onPredict(){
         
       })*/
 
-    }).catch(error => {
+    /*}).catch(error => {
       // Manejar errores
       console.error('Error en la petición:', error);
-    });
+    });*/
 
     train_neural(dat_to_train)
     // mostrar_resultados_team me devuelve los ultimos 5 partidos de un equipo en casa
@@ -242,6 +242,9 @@ function onPredict(){
   });
 
   console.log("Fuera del bicho");
+
+
+
 
 
   //train_neural(match_info_list)
