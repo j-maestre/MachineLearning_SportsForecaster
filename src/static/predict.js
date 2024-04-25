@@ -302,6 +302,16 @@ async function GetLastFive(name){
 }
 
 
+function redondearConPrecision(numero) {
+  const entero = Math.floor(numero);
+  const decimal = numero - entero;
+  if (decimal >= 0.6) {
+      return entero + 1;
+  } else {
+      return entero;
+  }
+}
+
 
 function train_neural(data){
   console.log("Training neural")
@@ -319,11 +329,11 @@ function train_neural(data){
     console.log("Entrenamiento finalizado");
     console.log(data.home_team + " " + data.predicted_home_goals + " - " + data.predicted_visitor_goals + " " + data.visitor_team);
 
-    document.getElementById("predict_result").innerHTML = `${data.home_team} ${data.predicted_home_goals.toFixed(2)} - ${data.predicted_visitor_goals.toFixed(2)} ${data.visitor_team}`;
-
+    document.getElementById("predict_result_raw").innerHTML = `${data.home_team} ${data.predicted_home_goals.toFixed(2)} - ${data.predicted_visitor_goals.toFixed(2)} ${data.visitor_team}`;
+    document.getElementById("predict_result").innerHTML = `${data.home_team} ${redondearConPrecision(data.predicted_home_goals)} - ${redondearConPrecision(data.predicted_visitor_goals)} ${data.visitor_team}`;
 
     let error_value1 = parseFloat(data.error_value[0]);
-    let error_value2 = parseFloat(data.error_value[1]);;
+    let error_value2 = parseFloat(data.error_value[1]);
     document.getElementById("predict_precision").innerHTML = "Home: " + error_value1.toFixed(3) + " Visitor: " + error_value2.toFixed(3);
     loading.style.display = "none";
 
