@@ -33,7 +33,25 @@ tf.random.set_seed(random_seed)
 team_mapping = {
   'Real Madrid': 0,
   'Barcelona': 1,
-  'Manchester United': 2
+  'Alaves' : 2,
+  'Almeria' : 3,
+  'Ath Bilbao' : 4,
+  'Ath Madrid' : 5,
+  'Betis' : 6,
+  'Cadiz' : 7,
+  'Celta Vigo' : 8,
+  'Getafe' : 9,
+  'Girona' : 10,
+  'Granada' : 11,
+  'Las Palmas' : 12,
+  'Mallorca' : 13,
+  'Osasuna' : 14,
+  'Sevilla' : 15,
+  'Sociedad' : 16,
+  'Valencia' : 17,
+  'Vallecano' : 18,
+  'Villarreal' : 19,
+  'Manchester United': 20
 }
 
 
