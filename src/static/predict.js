@@ -96,10 +96,11 @@ function onPredict(){
   let visitor_name = visitor.options[visitor.selectedIndex].id;
 
 
-  let date = document.getElementById("date").value;
+  //let date = document.getElementById("date").value;
   let time = document.getElementById("time").value;
 
-  console.log("Predict " + home_name + home_team + " vs " + visitor_name + visitor_team + " on " + date + " at " + time);
+  console.log("Predict " + home_name + home_team + " vs " + visitor_name + visitor_team + " at " + time);
+  //console.log("Predict " + home_name + home_team + " vs " + visitor_name + visitor_team + " on " + date);
 
   fetch(`/api/get?id_team=${home_team}`)
   .then(response => {

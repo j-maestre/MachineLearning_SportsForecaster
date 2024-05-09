@@ -177,15 +177,16 @@ def send_data_to_neural():
   print("**************************************************")
 
   # Separar características (X) y etiquetas (y)
-  # Datos para entrenar
-  X = [
     # [entry['home_goals'], entry['visitor_goals'], extract_hour(entry['time'])] # with raw time
+
+  # Train data
+  X = [
     [entry['home_goals'], entry['visitor_goals'], entry['time']]
     for entry in train_data
   ]
   print(X)
 
-  # Resultado esperado
+  # Expected outcome
   y = [
     [float(entry['home_goals']), float(entry['visitor_goals'])]
     for entry in train_data
@@ -198,16 +199,15 @@ def send_data_to_neural():
   # Normalizar características
   X_normalized = normalize_data(X)
 
-  # Dividir datos en conjuntos de entrenamiento y prueba
+  # Split data into training and test sets
   split_index = int(len(X) * 0.8)
   X_train, X_test = X_normalized[:split_index], X_normalized[split_index:]
   y_train, y_test = y[:split_index], y[split_index:]
 
-  # Entrenar la red neuronal para predecir goles de casa y visitante
-  print("**** Empezando a entrenar ****")
+  print("**** Start training ****")
   trained_model = train_neural_network(X_train, y_train)
 
-  # Evaluar el modelo en datos de prueba
+  # Evaluate model
   mse = trained_model.evaluate(X_test, y_test)
   print(f'Mean Squared Error on test data: {mse}')
   #print(f'Accuracy on test data: {accuracy}')
@@ -226,11 +226,18 @@ def normalize_data(data):
   return normalized_data
 
 def train_neural_network(X_train, y_train):
+  
   model = Sequential([
     Dense(64, activation='relu', input_shape=(X_train.shape[1],)),
     Dense(8, activation='relu'),
     Dense(2, activation='linear')
   ])
+
+  #model = Sequential([
+   # Dense(256, activation='sigmoid', input_shape=(X_train.shape[1],)),
+   # Dense(16, activation='relu'),
+   # Dense(2, activation='linear')
+  #])
 
   #optimizer = Adam(learning_rate=0.001)
   #model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
