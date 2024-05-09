@@ -5,26 +5,22 @@ from flask import Flask, jsonify
 
 def get_data_from_web(url):
     print("*********** URL WEB SCRAPING ***********")
-    url = "https://es.fcstats.com/club,partidos,real-madrid,345,73989.php"
-    print(url)
 
+    url = "https://es.fcstats.com/club,partidos,real-madrid,345,73989.php"
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
 
-    # Realizar la solicitud HTTP GET
     response = requests.get(url, headers=headers)
 
-    # Verificar si la solicitud fue exitosa (código de estado 200)
     if response.status_code == 200:
 
         soup = BeautifulSoup(response.content, 'html.parser')
         partidos = soup.find_all('tr', class_='matchRow')
 
-        #print(partidos)
         partidos_totales = []
 
-        # Iterar sobre cada fila de partido
+        # Iterate each match row
         for partido in partidos:
-            # Extraer la fecha del partido
+
             fecha = partido.find('td', class_='matchDate').text.strip()
 
             equipo_local_element = partido.find('td', class_='teamHomeName')
