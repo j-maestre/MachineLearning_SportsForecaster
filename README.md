@@ -10,9 +10,15 @@ Sports forecaster aplication
 ## Instalation
 
 ```
-cd tools
-python.exe ./Setup.py
+pip install requests
+pip install beautifulsoup4
+pip install Flask
+pip install tensorflow
+```
 
+## Init
+
+```
 cd src
 python.exe ./main.py
 ```
